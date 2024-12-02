@@ -1,26 +1,29 @@
 class DevicesController < ApplicationController
-  before_action :set_device, only: %i[ show update destroy ]
+  # before_action :set_device, only: %i[ show update destroy ]
+  before_action :authenticate_user!
 
   # GET /devices
-  def index
+  def index    
     @devices = Device.all
 
-    render json: @devices
+    render json: current_user.devices
   end
 
   # GET /devices/1
   def show
-    render json: @device
+    id = params[:id]
+    render json: current_user.devices.find_by(id: id)
   end
 
   # POST /devices
   def create
-    @device = Device.new(device_params)
+    device = Device.new(device_params)
+    device.user_id = current_user.id
 
-    if @device.save
-      render json: @device, status: :created, location: @device
+    if device.save
+      render json: device, status: :created, location: device
     else
-      render json: @device.errors, status: :unprocessable_entity
+      render json: device.errors, status: :unprocessable_entity
     end
   end
 
@@ -40,12 +43,12 @@ class DevicesController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_device
-      @device = Device.find(params.expect(:id))
-    end
+    # def set_device
+    #   @device = Device.find(params.expect(:id))
+    # end
 
     # Only allow a list of trusted parameters through.
     def device_params
-      params.expect(device: [ :name ])
+      params.expect(device: [ :name, :width, :height ])
     end
 end
