@@ -4,12 +4,12 @@ require "vips"
 
 class ImageGroupsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_image_groups, only: %i[ index show update destroy ]
   before_action :set_image_group, only: %i[ show update destroy ]
 
   # GET /image_groups
   def index
-    @image_groups = ImageGroup.all
-
+    # response = @image_groups.includes(original_image: { file_attachment: :blob })
     render json: @image_groups
   end
 
@@ -57,8 +57,12 @@ class ImageGroupsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
+    def set_image_groups
+      @image_groups = current_user.image_groups
+    end
+
     def set_image_group
-      @image_group = ImageGroup.find(params.expect(:id))
+      @image_group = @image_groups.find(params.expect(:id))
     end
 
     def image_params
