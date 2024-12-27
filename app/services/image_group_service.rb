@@ -6,8 +6,9 @@ class ImageGroupService
   end
 
   def create_cropped_and_thumbnail_images_by_crop_hints
-    # crop_hints = GoogleVisionApi.get_crop_hints(@original_image.file)
-    crop_hints = [{"x"=>2449}, {"x"=>4897}, {"x"=>4897, "y"=>3264}, {"x"=>2449, "y"=>3264}]
+    crop_hints = GoogleVisionApi.get_crop_hints(@original_image.file)
+    # TODO: handle multiple crop hints
+    # crop_hints = [{"x"=>2449}, {"x"=>4897}, {"x"=>4897, "y"=>3264}, {"x"=>2449, "y"=>3264}]
 
     @original_image.file.open do |file|
       imageProcessingService = ImageProcessing::ImageProcessor.new(file.path)

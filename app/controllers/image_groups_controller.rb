@@ -1,7 +1,3 @@
-require "mini_magick"
-require 'stringio'
-require "vips"
-
 class ImageGroupsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_device, only: %i[ index show create update destroy ]
@@ -10,7 +6,6 @@ class ImageGroupsController < ApplicationController
 
   # GET /image_groups
   def index
-    # response = @image_groups.includes(original_image: { file_attachment: :blob })
     render json: @image_groups
   end
 
