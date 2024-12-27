@@ -12,6 +12,8 @@ class GoogleVisionApi
       }]
     }))
 
+    Rails.logger.debug response.parsed_response
+
     response.parsed_response.dig("responses", 0, "cropHintsAnnotation", "cropHints", 0, "boundingPoly", "vertices") # Return the parsed JSON response
   end
 end

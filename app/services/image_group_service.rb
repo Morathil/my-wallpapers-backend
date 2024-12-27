@@ -5,51 +5,37 @@ class ImageGroupService
     @device = @image_group.device
   end
 
-  def generate_cropped_and_thumbnail_by_crop_hints
+  def create_cropped_and_thumbnail_images_by_crop_hints
     # crop_hints = GoogleVisionApi.get_crop_hints(@original_image.file)
     crop_hints = [{"x"=>2449}, {"x"=>4897}, {"x"=>4897, "y"=>3264}, {"x"=>2449, "y"=>3264}]
 
-    imageProcessingService = ImageProcessing::ImageProcessor.new(@original_image.file.path)
-    cropped_response = imageProcessingService.generate_cropped_and_thumnail(device_width: @device.width, device_height: @device.height, crop_hints: crop_hints) # TODO: wallpaper orientation
+    @original_image.file.open do |file|
+      imageProcessingService = ImageProcessing::ImageProcessor.new(file.path)
+      generated_cropped_and_thumbnail = imageProcessingService.generate_cropped_and_thumnail(device_width: @device.width, device_height: @device.height, crop_hints: crop_hints) # TODO: wallpaper orientation
+  
+      cropped_blob = generated_cropped_and_thumbnail[:cropped_blob]
+      cropped_width = generated_cropped_and_thumbnail[:cropped_width]
+      cropped_height = generated_cropped_and_thumbnail[:cropped_height]
+  
+      thumbnail_blob = generated_cropped_and_thumbnail[:thumbnail_blob]
+      thumbnail_width = generated_cropped_and_thumbnail[:thumbnail_width]
+      thumbnail_height = generated_cropped_and_thumbnail[:thumbnail_height]
+      
+      ActiveRecord::Base.transaction do
+        cropped_image = create_image_by_type(image_blob: cropped_blob, width: cropped_width, height: cropped_height, image_type: Image.image_types[:cropped])
+        thumbnail_image = create_image_by_type(image_blob: thumbnail_blob, width: thumbnail_width, height: thumbnail_height, image_type: Image.image_types[:thumbnail])
 
-    cropped_blob = generated_cropped_and_thumbnail[:cropped_blob]
-    cropped_width = generated_cropped_and_thumbnail[:cropped_width]
-    cropped_height = generated_cropped_and_thumbnail[:cropped_height]
-
-    create_cropped(cropped_image_blob: cropped_blob, width: cropped_width, height: cropped_height)
-
-    thumbnail_blob = generated_cropped_and_thumbnail[:thumbnail_blob]
-    thumbnail_width = generated_cropped_and_thumbnail[:thumbnail_width]
-    thumbnail_height = generated_cropped_and_thumbnail[:thumbnail_height]
-
-    create_thumbnail(thumbnail_image_blob: thumbnail_blob, width: thumbnail_width, height: thumbnail_height)
+        @image_group.update(cropped_id: cropped_image.id, thumbnail_id: thumbnail_image.id)
+      end
+    end
   end
 
   private
 
-  def create_cropped(cropped_image_blob:, width:, height:)
-    cropped_image = Image.new(width: width, height: height, image_type: Image.image_types[:cropped])
-    cropped_image.file.attach(cropped_image_blob)
-    cropped_image.save!
+  def create_image_by_type(image_blob:, width:, height:, image_type:)
+    image = Image.new(width: width, height: height, image_type: image_type)
+    image.file.attach(image_blob)
+    image.save!
+    image
   end
-
-  def create_thumbnail(thumbnail_image_blob:, width:, height:)
-    thumbnail_image = Image.new(width: width, height: height, image_type: Image.image_types[:cropped])
-    thumbnail_image.file.attach(thumbnail_image_blob)
-    thumbnail_image.save!
-  end
-
-  # def create_cropped_and_thumbnail_images()
-  #   ActiveRecord::Base.transaction do
-  #     cropped_image = Image.new(width: @original_image.width, height: @original_image.height, image_type: Image.image_types[:cropped])
-  #     cropped_image.file.attach(@original_image.file.blob)
-  #     cropped_image.save!
-
-  #     thumbnail_image = Image.new(width: @original_image.width, height: @original_image.height, image_type: Image.image_types[:thumbnail])
-  #     thumbnail_image.file.attach(@original_image.file.blob)
-  #     thumbnail_image.save!
-
-  #     @image_group.update(thumbnail_id: thumbnail_image.id, cropped_id: cropped_image.id)
-  #   end    
-  # end
 end
