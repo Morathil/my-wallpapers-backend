@@ -4,7 +4,7 @@ require "vips"
 
 class ImageGroupsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_device, only: %i[ index show update destroy ]
+  before_action :set_device, only: %i[ index show create update destroy ]
   before_action :set_image_groups, only: %i[ index show update destroy ]
   before_action :set_image_group, only: %i[ show update destroy ]
 
@@ -30,13 +30,13 @@ class ImageGroupsController < ApplicationController
     image.file.attach(params[:file])
     image.save!
 
-    image_group = ImageGroup.new(image_group_params.merge(original_id: image.id))
+    image_group = ImageGroup.new(original_id: image.id, device: @device)
 
     if image_group.save
       # Generate cropped and thumbnail async
       ImageGenerateJob.perform_async image_group.id
 
-      render json: image_group, status: :created, location: image_group
+      render json: image_group, status: :created
     else
       render json: image_group.errors, status: :unprocessable_entity
     end
@@ -72,10 +72,5 @@ class ImageGroupsController < ApplicationController
 
     def image_params
       image_params = JSON.parse(params[:image]).slice("image_type", "file")
-    end
-
-    # Only allow a list of trusted parameters through.
-    def image_group_params
-      JSON.parse(params[:image_group]).slice("device_id")
     end
 end
