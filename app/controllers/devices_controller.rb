@@ -1,6 +1,6 @@
 class DevicesController < ApplicationController
-  # before_action :set_device, only: %i[ show update destroy ]
   before_action :authenticate_user!
+  before_action :set_device, only: %i[ show update destroy ]
 
   # GET /devices
   def index    
@@ -11,8 +11,7 @@ class DevicesController < ApplicationController
 
   # GET /devices/1
   def show
-    id = params[:id]
-    render json: current_user.devices.find_by(id: id)
+    render json: @device
   end
 
   # POST /devices
@@ -43,9 +42,9 @@ class DevicesController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    # def set_device
-    #   @device = Device.find(params.expect(:id))
-    # end
+    def set_device
+      @device = current_user.devices.find_by(id: params.expect(:id))
+    end
 
     # Only allow a list of trusted parameters through.
     def device_params
