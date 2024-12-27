@@ -52,3 +52,7 @@ end
 gem "devise", "~> 4.9"
 gem 'devise-jwt'
 gem 'jsonapi-serializer'
+gem "image_processing", ">= 1.2"
+gem 'sidekiq'
+gem 'httparty'
+gem 'ruby-vips'
