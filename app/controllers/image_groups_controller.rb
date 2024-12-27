@@ -3,6 +3,7 @@ require 'stringio'
 require "vips"
 
 class ImageGroupsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_image_group, only: %i[ show update destroy ]
 
   # GET /image_groups
