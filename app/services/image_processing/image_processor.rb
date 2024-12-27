@@ -4,8 +4,8 @@ module ImageProcessing
   class ImageProcessor
     def initialize(filePath)
       @image = ::Vips::Image.new_from_file(filePath)
-      @image_width = @image.width
-      @image_height = @image.height
+      @image_width = @image.width.to_f # convert to float for division
+      @image_height = @image.height.to_f # convert to float for division
     end
 
     def get_size ()
@@ -21,13 +21,11 @@ module ImageProcessing
       cropped_width = new_dimensions[:width].to_f
       cropped_height = new_dimensions[:height].to_f
 
-      Rails.logger.debug "crop_center_x #{crop_center_x} "
-
       # Scale Down To Cropped Size (not cropped yet)
       if (@image_height > cropped_height && wallpaper_orientation == :portrait)
-        device_size_scaling_factor = cropped_height.to_f / @image_height
+        device_size_scaling_factor = cropped_height / @image_height
       elsif (@image_width > cropped_width)
-        device_size_scaling_factor = cropped_width.to_f / @image_width
+        device_size_scaling_factor = cropped_width / @image_width
       end
       
       device_size_image_resizer = ImageProcessing::ImageResizer.new(@image) 
@@ -64,6 +62,8 @@ module ImageProcessing
     private
 
     def get_new_dimensions(device_width, device_height, wallpaper_orientation)
+      device_width = device_width.to_f # convert to float for division
+      device_height = device_height.to_f # convert to float for division
       image_aspect_ratio = @image_width / @image_height
       is_image_landscape = image_aspect_ratio > 1
       device_normalized_aspect_ratio = get_normalized_aspect_ratio(device_width, device_height)
