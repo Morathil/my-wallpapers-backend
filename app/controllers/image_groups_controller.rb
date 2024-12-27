@@ -4,6 +4,7 @@ require "vips"
 
 class ImageGroupsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_device, only: %i[ index show update destroy ]
   before_action :set_image_groups, only: %i[ index show update destroy ]
   before_action :set_image_group, only: %i[ show update destroy ]
 
@@ -57,8 +58,12 @@ class ImageGroupsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
+    def set_device
+      @device = current_user.devices.find_by(id: params.expect(:device_id))
+    end
+    
     def set_image_groups
-      @image_groups = current_user.image_groups
+      @image_groups = @device.image_groups
     end
 
     def set_image_group

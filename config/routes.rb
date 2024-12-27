@@ -1,8 +1,11 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-  resources :devices
-  resources :image_groups
+  resources :devices do
+    resources :image_groups
+  end
+
+  # TODO: remove as only for test purpose
   resources :images
 
   devise_for :users, path: '', path_names: {
