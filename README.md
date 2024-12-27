@@ -32,6 +32,8 @@ redis-server
 bundle exec sidekiq
 VISUAL="code --wait" bin/rails credentials:edit
 
+# Reset DB
+- rake db:reset db:migrate
 
 {
   "responses": [
