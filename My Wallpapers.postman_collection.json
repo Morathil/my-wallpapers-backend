@@ -1,0 +1,354 @@
+{
+	"info": {
+		"_postman_id": "edba4f34-a38a-473f-bdde-6ee94a1f767b",
+		"name": "My Wallpapers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40198550"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"authHeader = pm.response.headers.find((h) => h.key === 'authorization')\r",
+							"pm.globals.set(\"authorization\", authHeader.value);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": {\r\n        \"email\": \"test6@test.com\",\r\n        \"password\": \"123456\",\r\n        \"name\": \"test\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"authHeader = pm.response.headers.find((h) => h.key === 'authorization')\r",
+							"pm.globals.set(\"authorization\", authHeader.value);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": {\r\n        \"email\": \"test6@test.com\",\r\n        \"password\": \"123456\",\r\n        \"name\": \"test\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": {\r\n        \"email\": \"test6@test.com\",\r\n        \"password\": \"123456\",\r\n        \"name\": \"test\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create device",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4NDk4YzVkNC1lNGY0LTQ3ZGQtODUwNC00OWM0YzRmNWJhMjIiLCJzdWIiOiI3Iiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzM1MzEyNDY0LCJleHAiOjE3MzUzMTQyNjR9.02PwqERPJnF0E4EFAVNxKrzL9Nzk07rMZGHx-US6N-I",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"device\": {\r\n        \"name\": \"test\",\r\n        \"width\": 1000,\r\n        \"height\": 1000\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/devices",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List devices",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4NDk4YzVkNC1lNGY0LTQ3ZGQtODUwNC00OWM0YzRmNWJhMjIiLCJzdWIiOiI3Iiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzM1MzEyNDY0LCJleHAiOjE3MzUzMTQyNjR9.02PwqERPJnF0E4EFAVNxKrzL9Nzk07rMZGHx-US6N-I",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:3000/devices",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create ImageGroup",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4NDk4YzVkNC1lNGY0LTQ3ZGQtODUwNC00OWM0YzRmNWJhMjIiLCJzdWIiOiI3Iiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzMzMjI0NjI3LCJleHAiOjE3MzMyMjY0Mjd9.jUPnodIWuNaTsEyCf3BoKgi5x1ml2ifTEtIfPvo59Ro",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"contentType": "text/plain",
+							"type": "file",
+							"src": "/C:/Users/morat/Downloads/Photos-001 (6)/DSC02100.jpg"
+						},
+						{
+							"key": "image",
+							"value": "{\"image_type\": \"original\"}",
+							"contentType": "application/json",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/devices/1/image_groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"devices",
+						"1",
+						"image_groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List image groups",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4NDk4YzVkNC1lNGY0LTQ3ZGQtODUwNC00OWM0YzRmNWJhMjIiLCJzdWIiOiI3Iiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzM1MzEyNDY0LCJleHAiOjE3MzUzMTQyNjR9.02PwqERPJnF0E4EFAVNxKrzL9Nzk07rMZGHx-US6N-I",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:3000/devices/1/image_groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"devices",
+						"1",
+						"image_groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ImageGroup by id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI4NDk4YzVkNC1lNGY0LTQ3ZGQtODUwNC00OWM0YzRmNWJhMjIiLCJzdWIiOiI3Iiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNzM1MzEyNDY0LCJleHAiOjE3MzUzMTQyNjR9.02PwqERPJnF0E4EFAVNxKrzL9Nzk07rMZGHx-US6N-I",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:3000/devices/15/image_groups/154",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"devices",
+						"15",
+						"image_groups",
+						"154"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"var authToken = pm.globals.get('authorization');\r",
+					"\r",
+					"if (['login', 'register'].indexOf(pm.request.url.path[0]) === -1) {\r",
+					"    pm.request.headers.add({key: 'Authorization', value: authToken })\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
