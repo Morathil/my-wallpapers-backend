@@ -6,13 +6,11 @@ class ImageGroupService
   end
 
   def create_cropped_and_thumbnail_images_by_crop_hints
-    crop_hints = GoogleVisionApi.get_crop_hints(@original_image.file)
-    # TODO: handle multiple crop hints
-    # crop_hints = [{"x"=>2449}, {"x"=>4897}, {"x"=>4897, "y"=>3264}, {"x"=>2449, "y"=>3264}]
+    target_wallpaper_orientation = @image_group.device.is_portrait ? :portrait : :landscape
 
     @original_image.file.open do |file|
-      imageProcessingService = ImageProcessing::ImageProcessor.new(file.path)
-      generated_cropped_and_thumbnail = imageProcessingService.generate_cropped_and_thumnail(device_width: @device.width, device_height: @device.height, crop_hints: crop_hints) # TODO: wallpaper orientation
+      imageProcessor = ImageProcessing::ImageProcessor.new(file.path)
+      generated_cropped_and_thumbnail = imageProcessor.generate_cropped_and_thumnail(device_width: @device.width, device_height: @device.height, target_wallpaper_orientation:)
   
       cropped_blob = generated_cropped_and_thumbnail[:cropped_blob]
       cropped_width = generated_cropped_and_thumbnail[:cropped_width]

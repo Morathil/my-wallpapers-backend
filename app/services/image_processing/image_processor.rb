@@ -12,17 +12,16 @@ module ImageProcessing
       { width: @image_width, height: @image_height }
     end
 
-    def generate_cropped_and_thumnail(device_width:, device_height:, crop_hints:)
-      wallpaper_orientation = :portrait
-      new_dimensions = get_new_dimensions(device_width, device_height, wallpaper_orientation)
+    def generate_cropped_and_thumnail(device_width:, device_height:, target_wallpaper_orientation:)
+      new_dimensions = get_new_dimensions(device_width:, device_height:, target_wallpaper_orientation:)
 
-      crop_center_x = (crop_hints[0]["x"] + crop_hints[1]["x"]) / 2
-      crop_center_y = @image_height / 2
       cropped_width = new_dimensions[:width].to_f
       cropped_height = new_dimensions[:height].to_f
 
       # Scale Down To Cropped Size (not cropped yet)
-      if (@image_height > cropped_height && wallpaper_orientation == :portrait)
+      device_size_scaling_factor = 1
+
+      if (@image_height > cropped_height && target_wallpaper_orientation == :portrait)
         device_size_scaling_factor = cropped_height / @image_height
       elsif (@image_width > cropped_width)
         device_size_scaling_factor = cropped_width / @image_width
@@ -31,8 +30,16 @@ module ImageProcessing
       device_size_image_resizer = ImageProcessing::ImageResizer.new(@image) 
       device_size_image = device_size_image_resizer.resize_by(factor: device_size_scaling_factor)
 
+      device_size_image_buffer = device_size_image.write_to_buffer('.jpg')
+
+      crop_hints = GoogleVisionApi.get_crop_hints(image_buffer: device_size_image_buffer, width: device_size_image.width, height: device_size_image.height, device_width:, device_height:)
+      crop_center_x = crop_hints[:x]
+      crop_center_y = crop_hints[:y]
+
+      Rails.logger.debug 'crop_hints'
+      Rails.logger.debug crop_hints
       # Crop
-      image_cropper = ImageProcessing::ImageCropper.new(image: device_size_image, cropped_height:, cropped_width:, crop_center_y:, crop_center_x:, wallpaper_orientation:)
+      image_cropper = ImageProcessing::ImageCropper.new(image: device_size_image, cropped_height:, cropped_width:, crop_center_y:, crop_center_x:, target_wallpaper_orientation:)
       cropped_image = image_cropper.crop
 
       # Thumnail
@@ -61,18 +68,18 @@ module ImageProcessing
 
     private
 
-    def get_new_dimensions(device_width, device_height, wallpaper_orientation)
+    def get_new_dimensions(device_width:, device_height:, target_wallpaper_orientation:)
       device_width = device_width.to_f # convert to float for division
       device_height = device_height.to_f # convert to float for division
       image_aspect_ratio = @image_width / @image_height
       is_image_landscape = image_aspect_ratio > 1
-      device_normalized_aspect_ratio = get_normalized_aspect_ratio(device_width, device_height)
+      device_normalized_aspect_ratio = get_normalized_aspect_ratio(device_width:, device_height:)
       aspect_ratio_difference = (is_image_landscape ? (@image_width / @image_height) : (@image_height / @image_width) - device_normalized_aspect_ratio).abs
     
       new_width = 0.0
       new_height = 0.0
     
-      if wallpaper_orientation == :landscape
+      if target_wallpaper_orientation == :landscape
         # Landscape orientation
         if is_image_landscape && aspect_ratio_difference < 0.1
           new_width = device_width
@@ -95,7 +102,7 @@ module ImageProcessing
       { width: new_width, height: new_height }
     end
 
-    def get_normalized_aspect_ratio (device_width, device_height)
+    def get_normalized_aspect_ratio (device_width:, device_height:)
       [device_width, device_height].max / [device_width, device_height].min
     end  
   end
