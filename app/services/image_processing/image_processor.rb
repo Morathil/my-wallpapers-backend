@@ -13,10 +13,10 @@ module ImageProcessing
     end
 
     def generate_cropped_and_thumnail(device_width:, device_height:, target_wallpaper_orientation:)
-      new_dimensions = get_new_dimensions(device_width:, device_height:, target_wallpaper_orientation:)
+      new_dimensions = ImageDimensions.new(vip_image: @image, device_width:, device_height:, new_wallpaper_orientation:)
 
-      cropped_width = new_dimensions[:width].to_f
-      cropped_height = new_dimensions[:height].to_f
+      cropped_width = new_dimensions.target_width
+      cropped_height = new_dimensions.target_height
 
       # Scale Down To Cropped Size (not cropped yet)
       device_size_scaling_factor = 1
@@ -64,46 +64,6 @@ module ImageProcessing
         cropped_blob: cropped_blob, cropped_width: cropped_image.width, cropped_height: cropped_image.height,
         thumbnail_blob: thumbnail_blob, thumbnail_width: thumbnail_image.width, thumbnail_height: thumbnail_image.height
       }
-    end
-
-    private
-
-    def get_new_dimensions(device_width:, device_height:, target_wallpaper_orientation:)
-      device_width = device_width.to_f # convert to float for division
-      device_height = device_height.to_f # convert to float for division
-      image_aspect_ratio = @image_width / @image_height
-      is_image_landscape = image_aspect_ratio > 1
-      device_normalized_aspect_ratio = get_normalized_aspect_ratio(device_width:, device_height:)
-      aspect_ratio_difference = (is_image_landscape ? (@image_width / @image_height) : (@image_height / @image_width) - device_normalized_aspect_ratio).abs
-
-      new_width = 0.0
-      new_height = 0.0
-
-      if target_wallpaper_orientation == :landscape
-        # Landscape orientation
-        if is_image_landscape && aspect_ratio_difference < 0.1
-          new_width = device_width
-          new_height = device_width / image_aspect_ratio
-        else
-          new_width = [ @image_width, device_width ].min
-          new_height = new_width / device_normalized_aspect_ratio
-        end
-      else
-        # Portrait orientation
-        if !is_image_landscape && aspect_ratio_difference < 0.1
-          new_height = device_height
-          new_width = device_height * image_aspect_ratio
-        else
-          new_height = [ @image_height, device_height ].min
-          new_width = new_height / device_normalized_aspect_ratio
-        end
-      end
-
-      { width: new_width, height: new_height }
-    end
-
-    def get_normalized_aspect_ratio (device_width:, device_height:)
-      [ device_width, device_height ].max / [ device_width, device_height ].min
     end
   end
 end
