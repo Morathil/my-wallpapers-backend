@@ -6,7 +6,7 @@ class ImageGroupService
   end
 
   def create_cropped_and_thumbnail_images_by_crop_hints
-    target_wallpaper_orientation = @image_group.device.is_portrait ? :portrait : :landscape
+    target_wallpaper_orientation = @image_group.device.portrait? ? :portrait : :landscape
 
     @original_image.file.open do |file|
       imageProcessor = ImageProcessing::ImageProcessor.new(file.path)
