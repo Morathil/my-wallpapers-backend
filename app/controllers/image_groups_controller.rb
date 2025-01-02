@@ -16,12 +16,10 @@ class ImageGroupsController < ApplicationController
 
   # POST /image_groups
   def create
-    imageProcessingService = ImageProcessing::ImageProcessor.new(params[:file].path)
-    size = imageProcessingService.get_size
-    image_width = size[:width]
-    image_height = size[:height]
+    image_processor = ImageProcessing::ImageProcessor.new(params[:file].path)
+    size = image_processor.get_size
 
-    image = Image.new(image_params.merge(width: image_width, height: image_height))
+    image = Image.new(image_params.merge(width: size[:width], height: size[:height]))
     image.file.attach(params[:file])
     image.save!
 
