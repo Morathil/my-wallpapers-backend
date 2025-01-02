@@ -41,9 +41,7 @@ module ImageProcessing
 
       new_x = [ [ max_x, [ min_x, (@x * factor - (@cropped_width / 2)).to_i ].max ].min, min_x ].max
 
-      # image.crop(new_x, 0, @cropped_width, cropped_height)
       @image.crop(new_x, 0, @cropped_width, @image.height)
-      # image.crop(@test_x0, 0, @test_x1 - @test_x0, @image.height)
     end
 
     def crop_landscape
@@ -66,7 +64,6 @@ module ImageProcessing
 
       new_y = [ [ max_y, [ min_y, (@y * factor - (@cropped_height / 2)).to_i ].max ].min, min_y ].max
 
-      # image.crop(0, new_y, cropped_width, cropped_height)
       @image.crop(0, new_y, @image.width, @cropped_height)
     end
   end
