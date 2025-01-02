@@ -13,13 +13,13 @@ module ImageProcessing
 
     def resize_to(pixel:)
       scaling_factor = pixel.to_f / [ image_width, image_height ].max
-      @image.resize(scaling_factor)
+      image.resize(scaling_factor)
     end
 
-    def resize_to_target_dimensions(dimensions)
+    def resize_to_target_dimensions(target_dimensions:, target_wallpaper_orientation:)
       target_dimensions_scaling_factor = 1
-      target_width = dimensions.target_width
-      target_height = dimensions.target_height
+      target_width = target_dimensions.width
+      target_height = target_dimensions.height
 
       if image_height > target_height && target_wallpaper_orientation == :portrait
         target_dimensions_scaling_factor = target_height / image_height
@@ -31,7 +31,7 @@ module ImageProcessing
     end
 
     private def resize_by(factor:)
-      @image.resize(factor)
+      image.resize(factor)
     end
   end
 end

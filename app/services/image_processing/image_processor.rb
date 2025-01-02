@@ -15,24 +15,18 @@ module ImageProcessing
     end
 
     def generate_cropped(device_width:, device_height:, target_wallpaper_orientation:)
-      target_dimensions = ImageDimensions.new(vip_image:, device_width:, device_height:, new_wallpaper_orientation:)
+      target_dimensions = ImageDimensions.new(vip_image:, device_width:, device_height:, target_wallpaper_orientation:)
 
+      # Resize to Crop
       device_size_image_resizer = ImageProcessing::ImageResizer.new(vip_image)
-      device_size_image = device_size_image_resizer.resize_to_dimensions(target_dimensions)
+      device_size_vip_image = device_size_image_resizer.resize_to_target_dimensions(target_dimensions:, target_wallpaper_orientation:)
 
-      device_size_image_buffer = device_size_image.write_to_buffer(".jpg")
+      # Get Crop Hints
+      crop_hints = GoogleVisionApi.get_crop_hints(vip_image: device_size_vip_image, device_width:, device_height:)
 
-      crop_hints = GoogleVisionApi.get_crop_hints(image_buffer: device_size_image_buffer, width: device_size_image.width, height: device_size_image.height, device_width:, device_height:)
-      crop_center_x = crop_hints[:x]
-      crop_center_y = crop_hints[:y]
-
-      Rails.logger.debug "crop_hints"
-      Rails.logger.debug crop_hints
       # Crop
-      image_cropper = ImageProcessing::ImageCropper.new(image: device_size_image, cropped_height:, cropped_width:, crop_center_y:, crop_center_x:, target_wallpaper_orientation:)
+      image_cropper = ImageProcessing::ImageCropper.new(vip_image: device_size_vip_image, target_dimensions:, crop_center_x: crop_hints[:x], crop_center_y: crop_hints[:y], target_wallpaper_orientation:)
       cropped_image = image_cropper.crop
-
-      cropped_vip_image = cropped_image
 
       cropped_blob_data = cropped_image.write_to_buffer(".jpg")
 
@@ -41,6 +35,8 @@ module ImageProcessing
         filename: "cropped_#{Time.now.to_i}.jpg",
         content_type: "image/jpeg"
       )
+
+      @cropped_vip_image = cropped_image # for thumbnails
 
       {
         blob: cropped_blob, width: cropped_image.width, height: cropped_image.height

@@ -1,6 +1,7 @@
 class GoogleVisionApi
-  def self.get_crop_hints(image_buffer:, width:, height:, device_width:, device_height:)
+  def self.get_crop_hints(vip_image:, device_width:, device_height:)
     begin
+      image_buffer = vip_image.write_to_buffer(".jpg")
       base64_encoded = Base64.strict_encode64(image_buffer)
       url = "https://vision.googleapis.com/v1/images:annotate?key=#{Rails.application.credentials.google_cloud_api_key!}"
 
@@ -29,7 +30,7 @@ class GoogleVisionApi
       { x: x, y: y }
     rescue Exception => e
       Rails.logger.debug "Rescue --- #{e}"
-      { x: width / 2, y: height / 2 }
+      { x: vip_image.width / 2, y: vip_image.height / 2 }
     end
   end
 end

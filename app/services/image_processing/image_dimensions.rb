@@ -5,21 +5,23 @@ module ImageProcessing
                 :device_width, :device_height,
                 :target_width, :target_height
 
-    def initialize(vip_image:, device:, target_wallpaper_orientation:)
+    def initialize(vip_image:, device_width:, device_height:, target_wallpaper_orientation:)
       @vip_image = vip_image
       @image_width = @vip_image.width.to_f # convert to float for division
       @image_height = @vip_image.height.to_f # convert to float for division
-      @device_width = device.width.to_f # convert to float for division
-      @device_height = device.height.to_f # convert to float for division
+      @device_width = device_width.to_f # convert to float for division
+      @device_height = device_height.to_f # convert to float for division
 
-      target_wallpaper_orientation == :landscape ? calculate_target_landscape : calculate_target_portrait
+      dimensions = target_wallpaper_orientation == :landscape ? calculate_target_landscape : calculate_target_portrait
+      @target_width = dimensions[:target_width]
+      @target_height = dimensions[:target_height]
     end
 
-    def target_width
+    def width
       target_width.to_f
     end
 
-    def target_height
+    def height
       target_height.to_f
     end
 
@@ -31,6 +33,8 @@ module ImageProcessing
         target_width = [ image_width, device_width ].min
         target_height = target_width / device_normalized_aspect_ratio
       end
+
+      { target_width:, target_height: }
     end
 
     private def calculate_target_portrait
@@ -41,6 +45,8 @@ module ImageProcessing
         target_height = [ image_height, device_height ].min
         target_width = target_height / device_normalized_aspect_ratio
       end
+
+      { target_width:, target_height: }
     end
 
     private def image_landscape?
@@ -56,7 +62,7 @@ module ImageProcessing
     end
 
     private def aspect_ratio_difference
-      (image_landscape ? image_aspect_ratio : (image_height / image_width) - device_normalized_aspect_ratio).abs
+      (image_landscape? ? image_aspect_ratio : (image_height / image_width) - device_normalized_aspect_ratio).abs
     end
   end
 end

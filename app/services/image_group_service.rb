@@ -11,7 +11,7 @@ class ImageGroupService
     @original_image.file.open do |file|
       imageProcessor = ImageProcessing::ImageProcessor.new(file.path)
       generated_cropped = imageProcessor.generate_cropped(device_width: @device.width, device_height: @device.height, target_wallpaper_orientation:)
-      generated_thumbnail = imageProcessor.generate_thumnail
+      generated_thumbnail = imageProcessor.generate_thumbnail
 
       ActiveRecord::Base.transaction do
         cropped_image = create_image_by_type(image_data: generated_cropped, image_type: Image.image_types[:cropped])
@@ -26,7 +26,7 @@ class ImageGroupService
 
   def create_image_by_type(image_data:, image_type:)
     image = Image.new(width: image_data[:width], height: image_data[:height], image_type: image_type)
-    image.file.attach(image_blob)
+    image.file.attach(image_data[:blob])
     image.save!
     image
   end

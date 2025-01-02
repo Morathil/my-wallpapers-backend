@@ -2,13 +2,13 @@ require "vips"
 
 module ImageProcessing
   class ImageCropper
-    def initialize(image:, cropped_height:, cropped_width:, crop_center_y:, crop_center_x:, target_wallpaper_orientation:)
+    def initialize(vip_image:, target_dimensions:, crop_center_y:, crop_center_x:, target_wallpaper_orientation:)
       @target_wallpaper_orientation = target_wallpaper_orientation
       @x = crop_center_x.to_i
       @y = crop_center_y.to_i
-      @cropped_width = cropped_width
-      @cropped_height = cropped_height
-      @image = image
+      @cropped_width = target_dimensions.width
+      @cropped_height = target_dimensions.height
+      @image = vip_image
     end
 
     def crop
