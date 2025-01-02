@@ -1,4 +1,4 @@
-require 'base64'
+require "base64"
 
 class ImageGenerateJob
   include Sidekiq::Job

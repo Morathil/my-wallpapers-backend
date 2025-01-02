@@ -3,7 +3,7 @@ class DevicesController < ApplicationController
   before_action :set_device, only: %i[ show update destroy ]
 
   # GET /devices
-  def index    
+  def index
     @devices = Device.all
 
     render json: current_user.devices

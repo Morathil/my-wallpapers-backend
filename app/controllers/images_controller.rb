@@ -14,7 +14,7 @@ class ImagesController < ApplicationController
     # render json: @image
     # TODO: Replace as this is only for test purposes to show image directly in postman
     file_content = @image.file.download
-    send_data file_content, filename: @image.file.filename.to_s, type: @image.file.content_type, disposition: 'attachment'
+    send_data file_content, filename: @image.file.filename.to_s, type: @image.file.content_type, disposition: "attachment"
   end
 
   # POST /images

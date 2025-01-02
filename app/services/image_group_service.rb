@@ -11,15 +11,15 @@ class ImageGroupService
     @original_image.file.open do |file|
       imageProcessor = ImageProcessing::ImageProcessor.new(file.path)
       generated_cropped_and_thumbnail = imageProcessor.generate_cropped_and_thumnail(device_width: @device.width, device_height: @device.height, target_wallpaper_orientation:)
-  
+
       cropped_blob = generated_cropped_and_thumbnail[:cropped_blob]
       cropped_width = generated_cropped_and_thumbnail[:cropped_width]
       cropped_height = generated_cropped_and_thumbnail[:cropped_height]
-  
+
       thumbnail_blob = generated_cropped_and_thumbnail[:thumbnail_blob]
       thumbnail_width = generated_cropped_and_thumbnail[:thumbnail_width]
       thumbnail_height = generated_cropped_and_thumbnail[:thumbnail_height]
-      
+
       ActiveRecord::Base.transaction do
         cropped_image = create_image_by_type(image_blob: cropped_blob, width: cropped_width, height: cropped_height, image_type: Image.image_types[:cropped])
         thumbnail_image = create_image_by_type(image_blob: thumbnail_blob, width: thumbnail_width, height: thumbnail_height, image_type: Image.image_types[:thumbnail])

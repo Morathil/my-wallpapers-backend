@@ -1,4 +1,4 @@
-require 'vips'
+require "vips"
 
 module ImageProcessing
   class ImageProcessor
@@ -8,7 +8,7 @@ module ImageProcessing
       @image_height = @image.height.to_f # convert to float for division
     end
 
-    def get_size ()
+    def get_size
       { width: @image_width, height: @image_height }
     end
 
@@ -21,29 +21,29 @@ module ImageProcessing
       # Scale Down To Cropped Size (not cropped yet)
       device_size_scaling_factor = 1
 
-      if (@image_height > cropped_height && target_wallpaper_orientation == :portrait)
+      if @image_height > cropped_height && target_wallpaper_orientation == :portrait
         device_size_scaling_factor = cropped_height / @image_height
-      elsif (@image_width > cropped_width)
+      elsif @image_width > cropped_width
         device_size_scaling_factor = cropped_width / @image_width
       end
-      
-      device_size_image_resizer = ImageProcessing::ImageResizer.new(@image) 
+
+      device_size_image_resizer = ImageProcessing::ImageResizer.new(@image)
       device_size_image = device_size_image_resizer.resize_by(factor: device_size_scaling_factor)
 
-      device_size_image_buffer = device_size_image.write_to_buffer('.jpg')
+      device_size_image_buffer = device_size_image.write_to_buffer(".jpg")
 
       crop_hints = GoogleVisionApi.get_crop_hints(image_buffer: device_size_image_buffer, width: device_size_image.width, height: device_size_image.height, device_width:, device_height:)
       crop_center_x = crop_hints[:x]
       crop_center_y = crop_hints[:y]
 
-      Rails.logger.debug 'crop_hints'
+      Rails.logger.debug "crop_hints"
       Rails.logger.debug crop_hints
       # Crop
       image_cropper = ImageProcessing::ImageCropper.new(image: device_size_image, cropped_height:, cropped_width:, crop_center_y:, crop_center_x:, target_wallpaper_orientation:)
       cropped_image = image_cropper.crop
 
       # Thumnail
-      thumbnail_image_resizer = ImageProcessing::ImageResizer.new(cropped_image) 
+      thumbnail_image_resizer = ImageProcessing::ImageResizer.new(cropped_image)
       thumbnail_image = thumbnail_image_resizer.resize_to(pixel: 320) # 0.3 scaling factor
 
       cropped_blob_data = cropped_image.write_to_buffer(".jpg")
@@ -52,15 +52,15 @@ module ImageProcessing
       cropped_blob = ActiveStorage::Blob.create_and_upload!(
         io: StringIO.new(cropped_blob_data),  # Use StringIO for in-memory processing
         filename: "cropped_#{Time.now.to_i}.jpg",
-        content_type: 'image/jpeg'
+        content_type: "image/jpeg"
       )
       thumbnail_blob = ActiveStorage::Blob.create_and_upload!(
         io: StringIO.new(thumbnail_blob_data),  # Use StringIO for in-memory processing
         filename: "thumbnail_#{Time.now.to_i}.jpg",
-        content_type: 'image/jpeg'
+        content_type: "image/jpeg"
       )
 
-      return {
+      {
         cropped_blob: cropped_blob, cropped_width: cropped_image.width, cropped_height: cropped_image.height,
         thumbnail_blob: thumbnail_blob, thumbnail_width: thumbnail_image.width, thumbnail_height: thumbnail_image.height
       }
@@ -75,17 +75,17 @@ module ImageProcessing
       is_image_landscape = image_aspect_ratio > 1
       device_normalized_aspect_ratio = get_normalized_aspect_ratio(device_width:, device_height:)
       aspect_ratio_difference = (is_image_landscape ? (@image_width / @image_height) : (@image_height / @image_width) - device_normalized_aspect_ratio).abs
-    
+
       new_width = 0.0
       new_height = 0.0
-    
+
       if target_wallpaper_orientation == :landscape
         # Landscape orientation
         if is_image_landscape && aspect_ratio_difference < 0.1
           new_width = device_width
           new_height = device_width / image_aspect_ratio
         else
-          new_width = [@image_width, device_width].min
+          new_width = [ @image_width, device_width ].min
           new_height = new_width / device_normalized_aspect_ratio
         end
       else
@@ -94,16 +94,16 @@ module ImageProcessing
           new_height = device_height
           new_width = device_height * image_aspect_ratio
         else
-          new_height = [@image_height, device_height].min
+          new_height = [ @image_height, device_height ].min
           new_width = new_height / device_normalized_aspect_ratio
         end
       end
-    
+
       { width: new_width, height: new_height }
     end
 
     def get_normalized_aspect_ratio (device_width:, device_height:)
-      [device_width, device_height].max / [device_width, device_height].min
-    end  
+      [ device_width, device_height ].max / [ device_width, device_height ].min
+    end
   end
 end

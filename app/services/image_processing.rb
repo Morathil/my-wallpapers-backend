@@ -1,2 +1,2 @@
-module ImageProcessing  
+module ImageProcessing
 end
